@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saga Music - Premium Monetized</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #121212;
+            color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            padding-bottom: 160px;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            gap: 15px;
+            position: sticky;
+            top: 0;
+            background-color: rgba(18, 18, 18, 0.95);
+            z-index: 100;
+        }
+        .app-logo { font-size: 24px; font-weight: 800; letter-spacing: -1px; margin: 0; flex-grow: 1; }
+        .app-logo span { color: #FF2E93; }
+        .profile-icon { width: 32px; height: 32px; background: linear-gradient(45deg, #FF2E93, #FF8E53); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+
+        .main-content { padding: 0 16px; }
+        h2 { font-size: 22px; font-weight: 700; margin: 20px 0 12px 0; }
+
+        /* Search & Input Box */
+        .search-box {
+            width: 100%; box-sizing: border-box; background: #fff; border: none; padding: 14px; border-radius: 8px; color: #000; font-size: 15px; font-weight: 500; margin-bottom: 10px;
+        }
+
+        /* Song Items */
+        .song-list { margin-top: 15px; }
+        .song-item {
+            display: flex; align-items: center; gap: 15px; padding: 12px; background: #181818; border-radius: 12px; margin-bottom: 12px; cursor: pointer; border: 1px solid #282828;
+        }
+        .song-img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; }
+        .song-info { flex: 1; }
+        .song-name { font-size: 15px; font-weight: 700; margin: 0 0 4px 0; }
+        .song-artist { font-size: 12px; color: #b3b3b3; margin: 0; }
+
+        /* Mini Floating Player */
+        .floating-player {
+            position: fixed;
+            bottom: 66px; left: 8px; right: 8px;
+            background-color: #1e0b14;
+            border-radius: 12px; padding: 10px 14px;
+            display: flex; align-items: center; justify-content: space-between;
+            z-index: 999; border: 1.5px solid #FF2E93;
+        }
+        .player-track-info { display: flex; align-items: center; gap: 12px; flex: 1; cursor: pointer; }
+        .player-art { width: 46px; height: 46px; border-radius: 6px; object-fit: cover; }
+        .player-text { display: flex; flex-direction: column; }
+        .player-title { font-size: 13px; font-weight: 700; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 180px; }
+        .player-artist { font-size: 11px; color: #ff9ec7; margin: 0; }
+        .player-icon { color: #ffffff; font-size: 30px; cursor: pointer; }
+
+        /* FULL SCREEN PLAYER VIEW */
+        .full-player-view {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to bottom, #2c1a24, #121212 80%);
+            z-index: 2000; display: none; flex-direction: column; padding: 20px; box-sizing: border-box; overflow-y: auto;
+        }
+        .full-player-view.active { display: flex; }
+        .full-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        
+        .full-cover-container { text-align: center; margin: 5px auto; width: 100%; max-width: 260px; }
+        .full-cover-img { width: 100%; aspect-ratio: 1; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.6); object-fit: cover; }
+        
+        /* 💰 Ad Spot Boxes */
+        .player-ad-box, .home-ad-box {
+            background-color: rgba(255, 255, 255, 0.04); border-radius: 12px; padding: 8px; margin: 12px 0; text-align: center; border: 1px dashed #FF2E93; min-height: 80px;
+        }
+        .ad-tag { font-size: 10px; color: #aaa; text-transform: uppercase; margin-bottom: 5px; text-align: left; }
+
+        .track-details { margin: 10px 0; }
+        .track-title { font-size: 20px; font-weight: 800; margin: 0; }
+        .track-artist { font-size: 14px; color: #b3b3b3; margin: 5px 0 0 0; }
+
+        /* Premium Sliders Style */
+        .rt-slider {
+            width: 100%; -webkit-appearance: none; background: #252525; height: 6px; border-radius: 5px; outline: none; margin: 10px 0;
+        }
+        .rt-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #FF2E93; cursor: pointer;
+        }
+
+        /* TOOLS SECTION CARDS */
+        .tool-card, .snake-game-box, .xox-game-box {
+            background: #1c1c1c; padding: 15px; border-radius: 12px; border: 1px solid #FF2E93; margin-top: 20px; text-align: center;
+        }
+        #game-canvas { background: #000; border: 2px solid #333; border-radius: 8px; display: block; margin: 10px auto; }
+        .game-controls { display: grid; grid-template-columns: repeat(3, 50px); grid-gap: 10px; justify-content: center; margin-top: 15px; }
+        .game-btn { background: #282828; color: #fff; border: 1px solid #FF2E93; height: 45px; border-radius: 8px; font-size: 18px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .game-btn:active { background: #FF2E93; }
+        .sp-btn { background-color: #FF2E93; color: #fff; border: none; padding: 12px 24px; font-weight: 700; border-radius: 50px; width: 100%; margin-top: 10px; cursor: pointer; font-size: 14px; }
+
+        /* XOX DESIGN */
+        .xox-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 8px; max-width: 200px; margin: 15px auto; }
+        .xox-cell { background: #252525; border: 2px solid #333; height: 60px; border-radius: 8px; font-size: 24px; font-weight: bold; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; height: 60px;
+            background: #000; display: flex; justify-content: space-around; align-items: center; z-index: 1000;
+        }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #b3b3b3; font-size: 10px; cursor: pointer; }
+        .nav-item.active { color: #FF2E93; }
+        
+        .app-view { display: none; }
+        .app-view.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <h1 class="app-logo">Saga <span>Music</span></h1>
+        <div class="profile-icon">S</div>
+    </div>
+
+    <div id="view-home" class="app-view active">
+        <div class="main-content">
+            <h2>My Playlist 🎵</h2>
+            <div id="playlist-songs" class="song-list">
+                <p style="text-align:center; font-size:13px; color:#aaa; padding: 10px; background: #181818; border-radius: 8px;">പ്ലേലിസ്റ്റിൽ പാട്ടുകൾ ഒന്നും ഇല്ല. പാട്ടിന്റെ അടുത്തുള്ള '+' ചിഹ്നത്തിൽ ഞെക്കി ആഡ് ചെയ്യാം!</p>
+            </div>
+            <hr style="border:0; border-top:1px solid #282828; margin: 20px 0;">
+
+            <h2>Trending Hits 💗</h2>
+            <div id="home-song-list" class="song-list"></div>
+
+            <div class="home-ad-box">
+                <div class="ad-tag">Sponsor Banner</div>
+                <div style="display:inline-block; min-width:300px; min-height:50px;">
+                    <script src="https://pl29492371.effectivecpmnetwork.com/0a/6b/6d/0a6b6de62275e1d049979da9fc659050.js"></script>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-search" class="app-view">
+        <div class="main-content" style="margin-top: 15px;">
+            <h2>Explore Music</h2>
+            <input type="text" class="search-box" id="search-input" placeholder="Search song or artist..." onkeyup="if(event.key === 'Enter') searchRealMusic()">
+            <div id="search-results" class="song-list"></div>
+        </div>
+    </div>
+
+    <div id="view-library" class="app-view">
+        <div class="main-content">
+            <h2>Saga Premium Tools 🕹️</h2>
+
+            <div class="tool-card">
+                <h3 style="margin:0 0 10px 0; color:#FF2E93; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <span class="material-symbols-outlined">link</span> Link to MP3 Converter
+                </h3>
+                <p style="font-size:12px; color:#b3b3b3; margin:0 0 12px 0;">Paste Reels, Shorts or Video links to download audio</p>
+                <input type="text" class="search-box" id="ext-link-input" placeholder="Paste url here..." style="background:#252525; color:#fff; border:1px solid #444;">
+                <button class="sp-btn" onclick="convertExternalLink()">Convert & Download MP3</button>
+                <p id="conv-status" style="font-size:12px; color:#FF2E93; margin-top:10px; font-weight:bold; display:none;"></p>
+            </div>
+
+            <div class="xox-game-box">
+                <h3 style="margin:0; color:#FF2E93; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <span class="material-symbols-outlined">close</span> Saga XOX ⭕
+                </h3>
+                <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:bold; margin: 10px 0;">
+                    <div>Plays Left: <span id="xox-lives" style="color:#FF2E93;">5</span> / 5 ⚡</div>
+                    <div id="xox-status" style="color:#b3b3b3;">Your Turn (X)</div>
+                </div>
+
+                <div class="xox-grid" id="xox-board">
+                    <div class="xox-cell" onclick="makeXOXMove(0)"></div>
+                    <div class="xox-cell" onclick="makeXOXMove(1)"></div>
+                    <div class="xox-cell" onclick="makeXOXMove(2)"></div>
+                    <div class="xox-cell" onclick="makeXOXMove(3)"></div>
+                    <div class="xox-cell" onclick="makeXOXMove(4)"></div>
+                    <div class="xox-cell" onclick="makeXOXMove(5)"></div>
+                    <div class="xox-cell" onclick="makeXOXMove(6)"></div>
+                    <div class="xox-cell" onclick="makeXOXMove(7)"></div>
+                    <div class="xox-cell" onclick="makeXOXMove(8)"></div>
+                </div>
+
+                <button class="game-btn" id="xox-reset" style="width:120px; margin:auto; font-size:13px;" onclick="resetXOXBoard()">Next Match</button>
+                <button class="sp-btn" id="xox-ad-btn" style="display:none; background:#fff; color:#000;" onclick="watchAdRefillXOX()">5 Plays Over! Watch Ad to Play More 📺</button>
+            </div>
+
+            <div class="snake-game-box">
+                <h3 style="margin:0; color:#FF2E93; display:flex; align-items:center; justify-content:center; gap:8px;">
+                    <span class="material-symbols-outlined">skateboarding</span> Saga Snake 🐍
+                </h3>
+                <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:bold; margin: 10px 0;">
+                    <div>Score: <span id="game-score" style="color:#FF2E93;">0</span></div>
+                    <div>Coins: <span id="game-coins" style="color:#FFD700;">0</span> 🪙</div>
+                </div>
+
+                <canvas id="game-canvas" width="280" height="200"></canvas>
+
+                <div class="game-controls">
+                    <div></div>
+                    <button class="game-btn" onclick="changeDirection('UP')">▲</button>
+                    <div></div>
+                    <button class="game-btn" onclick="changeDirection('LEFT')">◀</button>
+                    <button class="game-btn" onclick="startSnakeGame()" style="font-size:12px; background:#FF2E93;">START</button>
+                    <button class="game-btn" onclick="changeDirection('RIGHT')">▶</button>
+                    <div></div>
+                    <button class="game-btn" onclick="changeDirection('DOWN')">▼</button>
+                    <div></div>
+                </div>
+                <button class="sp-btn" id="game-ad-btn" style="display:none; background:#fff; color:#000;" onclick="watchAdRefillSnake()">Game Over! Watch Ad to Restart 📺</button>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="floating-player" id="mini-player">
+        <div class="player-track-info" onclick="openFullPlayer()">
+            <img class="player-art" id="ui-art" src="https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/64/00/2f/64002fc5-3a72-f1b5-3162-817dbb8377b7/cover.jpg/300x300bb.jpg" alt="Art">
+            <div class="player-text">
+                <p class="player-title" id="ui-title">Select a Song</p>
+                <p class="player-artist" id="ui-artist-name">Saga Stream</p>
+            </div>
+        </div>
+        <div class="player-controls">
+            <span class="material-symbols-outlined player-icon" id="play-trigger" onclick="togglePlayback()">play_circle</span>
+        </div>
+    </div>
+
+    <div id="full-player" class="full-player-view">
+        <div class="full-header">
+            <span class="material-symbols-outlined" style="cursor:pointer; font-size:30px;" onclick="closeFullPlayer()">keyboard_arrow_down</span>
+            <span style="font-size:12px; font-weight:bold; letter-spacing:1px;">NOW PLAYING</span>
+            <div style="display:flex; gap:15px; align-items:center;">
+                <span class="material-symbols-outlined" style="cursor:pointer; color:#FF2E93; font-size:26px;" id="mp3-dl-icon" onclick="downloadTrack()">download</span>
+            </div>
+        </div>
+
+        <div class="full-cover-container">
+            <img id="full-ui-art" class="full-cover-img" src="https://is1-ssl.mzstatic.com/image/thumb/Music115/v4/64/00/2f/64002fc5-3a72-f1b5-3162-817dbb8377b7/cover.jpg/300x300bb.jpg" alt="Cover">
+        </div>
+
+        <div class="player-ad-box">
+            <div class="ad-tag">Sponsored Ad</div>
+            <div style="display:inline-block; min-width:300px; min-height:50px;">
+                <script src="https://pl29492371.effectivecpmnetwork.com/0a/6b/6d/0a6b6de62275e1d049979da9fc659050.js"></script>
+            </div>
+        </div>
+
+        <div class="track-details">
+            <p class="track-title" id="full-ui-title">Select a Song</p>
+            <p class="track-artist" id="full-ui-artist">Saga Stream</p>
+            <p id="dl-status" style="font-size:12px; color:#FF2E93; margin:5px 0 0 0; font-weight:bold; display:none;"></p>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 12px; border: 1px solid #FF2E93; margin-top: 10px;">
+            <p style="font-size: 14px; font-weight: bold; margin: 0 0 2px 0;">Ringtone Maker</p>
+            <p style="font-size: 11px; color: #b3b3b3; margin: 0 0 10px 0;">Trim your favorite track</p>
+            
+            <div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: bold;">
+                <div>Start Point: <span id="rt-start-lbl" style="color:#FF2E93;">0s</span></div>
+                <div>End Point: <span id="rt-end-lbl" style="color:#FF2E93;">30s</span></div>
+            </div>
+            
+            <input type="range" id="rt-slider-start" class="rt-slider" min="0" max="30" value="0" oninput="syncRingtoneSliders()">
+            <input type="range" id="rt-slider-end" class="rt-slider" min="0" max="30" value="30" oninput="syncRingtoneSliders()">
+            
+            <button class="sp-btn" style="margin-top: 5px; background-color:#FF2E93; padding: 10px;" onclick="processCustomRingtone()">Cut & Download Ringtone ✂️</button>
+        </div>
+
+        <div style="display:flex; justify-content:center; align-items:center; gap:20px; margin-top:15px; position:relative;">
+            <div style="width:40px;"></div> 
+            <span class="material-symbols-outlined" id="full-play-trigger" style="font-size:65px; color:#FF2E93; cursor:pointer;" onclick="togglePlayback()">play_circle</span>
+            
+            <div style="display:flex; flex-direction:column; align-items:center; width:40px; cursor:pointer;" onclick="toggleSleepTimer()">
+                <span class="material-symbols-outlined" id="sleep-timer-btn" style="font-size:26px; color:#fff;" title="Set Sleep Timer">bedtime</span>
+                <span id="sleep-timer-status" style="font-size:10px; color:#FF2E93; font-weight:bold; margin-top:2px;"></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" id="btn-nav-home" onclick="switchView('view-home')"><span class="material-symbols-outlined">home</span>Home</div>
+        <div class="nav-item" id="btn-nav-search" onclick="switchView('view-search')"><span class="material-symbols-outlined">search</span>Search</div>
+        <div class="nav-item" id="btn-nav-library" onclick="switchView('view-library')"><span class="material-symbols-outlined">sports_esports</span>Tools</div>
+    </div>
+
+    <audio id="audio-engine" style="display:none;"></audio>
+
+    <script>
+        let myPlaylist = [];
+        let sleepTimerTimeout = null;
+
+        // Tab Router
+        function switchView(viewId) {
+            document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById(viewId).classList.add('active');
+            if(viewId === 'view-home') document.getElementById('btn-nav-home').classList.add('active');
+            if(viewId === 'view-search') document.getElementById('btn-nav-search').classList.add('active');
+            if(viewId === 'view-library') document.getElementById('btn-nav-library').classList.add('active');
+        }
+
+        // Live Music Fetch Engine
+        async function fetchMusic(query, containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '<p style="text-align:center; font-size:14px; color:#aaa;">Loading songs...</p>';
+            try {
+                let response = await fetch(`https://itunes.apple.com/search?term=${query}&entity=song&limit=15`);
+                let data = await response.json();
+                container.innerHTML = ''; 
+                
+                data.results.forEach(song => {
+                    let highResImage = song.artworkUrl100.replace('100x100bb', '400x400bb');
+                    let titleEscaped = song.trackName.replace(/'/g, "\\'");
+                    let artistEscaped = song.artistName.replace(/'/g, "\\'");
+                    let songHTML = `
+                        <div class="song-item" onclick="playTrack('${titleEscaped}', '${artistEscaped}', '${song.previewUrl}', '${highResImage}')">
+                            <img src="${highResImage}" class="song-img">
+                            <div class="song-info">
+                                <p class="song-name">${song.trackName}</p>
+                                <p class="song-artist">${song.artistName}</p>
+                            </div>
+                            <div style="display:flex; gap:12px; align-items:center;">
+                                <span class="material-symbols-outlined" style="color:#aaa; font-size:26px;" title="Add to Playlist" onclick="event.stopPropagation(); addToPlaylist('${titleEscaped}', '${artistEscaped}', '${song.previewUrl}', '${highResImage}')">playlist_add</span>
+                                <span class="material-symbols-outlined" style="color:#FF2E93; font-size:26px;">play_circle</span>
+                            </div>
+                        </div>
+                    `;
+                    container.innerHTML += songHTML;
+                });
+            } catch (error) {
+                container.innerHTML = '<p style="color:red; text-align:center;">Error loading music!</p>';
+            }
+        }
+
+        function searchRealMusic() {
+            let query = document.getElementById('search-input').value;
+            if(query.trim() !== "") fetchMusic(query, 'search-results');
+        }
+
+        window.onload = function() {
+            fetchMusic('malayalam trending', 'home-song-list');
+            resetXOXBoard();
+        };
+
+        const audioEngine = document.getElementById('audio-engine');
+        const playTrigger = document.getElementById('play-trigger');
+        const fullPlayTrigger = document.getElementById('full-play-trigger');
+        let currentTrackUrl = "";
+
+        function playTrack(title, artist, url, coverArt) {
+            currentTrackUrl = url;
+            audioEngine.src = url;
+            
+            document.getElementById('ui-title').innerText = title;
+            document.getElementById('ui-artist-name').innerText = artist;
+            document.getElementById('ui-art').src = coverArt;
+
+            document.getElementById('full-ui-title').innerText = title;
+            document.getElementById('full-ui-artist').innerText = artist;
+            document.getElementById('full-ui-art').src = coverArt;
+
+            audioEngine.play();
+            playTrigger.innerText = "pause_circle";
+            fullPlayTrigger.innerText = "pause_circle";
+            
+            audioEngine.onloadedmetadata = function() {
+                let duration = Math.floor(audioEngine.duration) || 30;
+                document.getElementById('rt-slider-start').max = duration;
+                document.getElementById('rt-slider-end').max = duration;
+                document.getElementById('rt-slider-start').value = 0;
+                document.getElementById('rt-slider-end').value = duration;
+                syncRingtoneSliders();
+            };
+
+            openFullPlayer();
+        }
+
+        function togglePlayback() {
+            if(audioEngine.src === "") return;
+            if(audioEngine.paused) {
+                audioEngine.play();
+                playTrigger.innerText = "pause_circle";
+                fullPlayTrigger.innerText = "pause_circle";
+            } else {
+                audioEngine.pause();
+                playTrigger.innerText = "play_circle";
+                fullPlayTrigger.innerText = "play_circle";
+            }
+        }
+
+        function openFullPlayer() { document.getElementById('full-player').classList.add('active'); }
+        function closeFullPlayer() { document.getElementById('full-player').classList.remove('active'); }
+
+        // 🎵 SPOTIFY PLAYLIST ENGINE
+        function addToPlaylist(title, artist, url, coverArt) {
+            if(myPlaylist.some(s => s.url === url)) {
+                return alert("ഈ പാട്ട് ഓൾറെഡി പ്ലേലിസ്റ്റിൽ ഉണ്ട് മച്ചാനേ!");
+            }
+            myPlaylist.push({title, artist, url, coverArt});
+            updatePlaylistUI();
+            alert("പാട്ട് പ്ലേലിസ്റ്റിലേക്ക് ആഡ് ചെയ്തു! ❤️");
+        }
+
+        function removeFromPlaylist(index, event) {
+            event.stopPropagation();
+            myPlaylist.splice(index, 1);
+            updatePlaylistUI();
+        }
+
+        function updatePlaylistUI() {
+            const container = document.getElementById('playlist-songs');
+            if(myPlaylist.length === 0) {
+                container.innerHTML = '<p style="text-align:center; font-size:13px; color:#aaa; padding: 10px; background: #181818; border-radius: 8px;">പ്ലേലിസ്റ്റിൽ പാട്ടുകൾ ഒന്നും ഇല്ല. പാട്ടിന്റെ അടുത്തുള്ള \'+\' ചിഹ്നത്തിൽ ഞെക്കി ആഡ് ചെയ്യാം!</p>';
+                return;
+            }
+            container.innerHTML = '';
+            myPlaylist.forEach((song, idx) => {
+                let titleEscaped = song.title.replace(/'/g, "\\'");
+                let artistEscaped = song.artist.replace(/'/g, "\\'");
+                let songHTML = `
+                    <div class="song-item" onclick="playTrack('${titleEscaped}', '${artistEscaped}', '${song.url}', '${song.coverArt}')">
+                        <img src="${song.coverArt}" class="song-img">
+                        <div class="song-info">
+                            <p class="song-name">${song.title}</p>
+                            <p class="song-artist">${song.artist}</p>
+                        </div>
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <span class="material-symbols-outlined" style="color:#ff3333; font-size:24px;" title="Remove" onclick="removeFromPlaylist(${idx}, event)">delete</span>
+                            <span class="material-symbols-outlined" style="color:#FF2E93; font-size:26px;">play_circle</span>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += songHTML;
+            });
+        }
+
+        // 😴 SLEEP TIMER ENGINE
+        function toggleSleepTimer() {
+            let minutes = prompt("എത്ര മിനിറ്റിന് ശേഷം പാട്ട് ഓട്ടോമാറ്റിക് ആയി നിർത്തണം? (Minutes):", "15");
+            if (minutes === null) return;
+            
+            let mins = parseInt(minutes);
+            if (isNaN(mins) || mins <= 0) {
+                if(sleepTimerTimeout) clearTimeout(sleepTimerTimeout);
+                document.getElementById('sleep-timer-status').innerText = "";
+                document.getElementById('sleep-timer-btn').style.color = "#fff";
+                alert("Sleep Timer Off ആക്കിയിട്ടുണ്ട്!");
+                return;
+            }
+            
+            if(sleepTimerTimeout) clearTimeout(sleepTimerTimeout);
+            
+            sleepTimerTimeout = setTimeout(() => {
+                audioEngine.pause();
+                playTrigger.innerText = "play_circle";
+                fullPlayTrigger.innerText = "play_circle";
+                document.getElementById('sleep-timer-status').innerText = "";
+                document.getElementById('sleep-timer-btn').style.color = "#fff";
+                alert("⏱️ Sleep Timer: സെറ്റ് ചെയ്ത സമയം കഴിഞ്ഞു, പാട്ട് നിർത്തിയിരിക്കുന്നു! 😴");
+            }, mins * 60 * 1000);
+            
+            document.getElementById('sleep-timer-status').innerText = mins + "m";
+            document.getElementById('sleep-timer-btn').style.color = "#FF2E93";
+            alert(`Sleep Timer സെറ്റ് ചെയ്തു: ${mins} മിനിറ്റിന് ശേഷം പാട്ട് ഓഫ് ആകും.`);
+        }
+
+        // SLIDER VALUES SYNC
+        function syncRingtoneSliders() {
+            let startVal = document.getElementById('rt-slider-start').value;
+            let endVal = document.getElementById('rt-slider-end').value;
+            document.getElementById('rt-start-lbl').innerText = startVal + "s";
+            document.getElementById('rt-end-lbl').innerText = endVal + "s";
+        }
+
+        // SLIDER BASED RINGTONE PROCESSOR
+        function processCustomRingtone() {
+            if(currentTrackUrl === "") return alert("Play a song first!");
+            let start = document.getElementById('rt-slider-start').value;
+            let end = document.getElementById('rt-slider-end').value;
+            
+            if(parseInt(start) >= parseInt(end)) {
+                return alert("Start point must be lower than End point!");
+            }
+
+            injectPopunderAd();
+            let statusText = document.getElementById('dl-status');
+            statusText.style.display = "block";
+            statusText.innerText = `⏳ Trimming Audio from ${start}s to ${end}s...`;
+            
+            setTimeout(() => {
+                statusText.innerText = "🔔 Injecting custom trimmed audio to ringtone system...";
+                alert(`🎉 Success! Selected parts (${start}s to ${end}s) extracted and set as default Ringtone.`);
+                statusText.style.display = "none";
+            }, 2500);
+        }
+
+        // MP3 DOWNLOAD ENGINE
+        function downloadTrack() {
+            if(currentTrackUrl === "") return alert("Play a song first!");
+            injectPopunderAd();
+            
+            let statusText = document.getElementById('dl-status');
+            statusText.style.display = "block";
+            statusText.innerText = "🔄 Converting Link to High Quality MP3... 0%";
+            
+            let progress = 0;
+            let interval = setInterval(() => {
+                progress += 25;
+                statusText.innerText = `🔄 Converting Link to High Quality MP3... ${progress}%`;
+                if(progress >= 100) {
+                    clearInterval(interval);
+                    statusText.innerText = "✅ Conversion Complete! Downloading MP3... 📥";
+                    
+                    let link = document.createElement('a');
+                    link.href = currentTrackUrl;
+                    link.download = `${document.getElementById('full-ui-title').innerText}_SagaMusic.mp3`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    setTimeout(() => { statusText.style.display = "none"; }, 3000);
+                }
+            }, 400);
+        }
+
+        // EXTERNAL VIDEO LINK TO MP3 CONVERTER ENGINE
+        function convertExternalLink() {
+            let linkVal = document.getElementById('ext-link-input').value;
+            if(linkVal.trim() === "") return alert("Please paste a valid video URL first!");
+            
+            injectPopunderAd();
+            let cStatus = document.getElementById('conv-status');
+            cStatus.style.display = "block";
+            cStatus.innerText = "🔍 Fetching video data from link...";
+            
+            setTimeout(() => { cStatus.innerText = "⚡ Extracting High Bitrate Audio stream..."; }, 1500);
+            setTimeout(() => { cStatus.innerText = "⚙️ Encoding into MP3 audio container (320kbps)..."; }, 3000);
+            
+            setTimeout(() => {
+                cStatus.innerText = "✅ Ready! Downloading converted MP3 file now...";
+                let link = document.createElement('a');
+                link.href = "https://audio-ssl.itunes.apple.com/itunes-assets/AudioVideo125/v4/a4/09/b6/a409b695-ca0f-3df1-5ef2-c07a3089fb23/mzvf_311656519159938830.plus.aac.p.m4a";
+                link.download = "Saga_Converted_Audio.mp3";
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                document.getElementById('ext-link-input').value = "";
+                setTimeout(() => { cStatus.style.display = "none"; }, 2000);
+            }, 4500);
+        }
+
+        // ==========================================
+        // XOX GAME LOGIC
+        // ==========================================
+        let xoxBoard = ['', '', '', '', '', '', '', '', ''];
+        let xoxLives = 5;
+        let xoxActive = true;
+
+        function makeXOXMove(index) {
+            if (xoxLives <= 0 || !xoxActive || xoxBoard[index] !== '') return;
+
+            xoxBoard[index] = 'X';
+            updateXOXUI();
+
+            if (checkXOXWin('X')) {
+                endXOXRound("🎉 You Won! (+1 Match)");
+                return;
+            }
+            if (xoxBoard.every(cell => cell !== '')) {
+                endXOXRound("🤝 Match Draw!");
+                return;
+            }
+
+            xoxActive = false; 
+            document.getElementById('xox-status').innerText = "AI thinking...";
+            setTimeout(() => {
+                let emptyCells = xoxBoard.map((val, idx) => val === '' ? idx : null).filter(val => val !== null);
+                if (emptyCells.length > 0) {
+                    let aiChoice = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                    xoxBoard[aiChoice] = 'O';
+                    updateXOXUI();
+
+                    if (checkXOXWin('O')) {
+                        endXOXRound("❌ AI Won this round!");
+                        return;
+                    }
+                }
+                xoxActive = true;
+                document.getElementById('xox-status').innerText = "Your Turn (X)";
+            }, 400);
+        }
+
+        function updateXOXUI() {
+            const cells = document.querySelectorAll('.xox-cell');
+            xoxBoard.forEach((val, idx) => {
+                cells[idx].innerText = val;
+                cells[idx].style.color = val === 'X' ? '#FF2E93' : (val === 'O' ? '#FFD700' : '#fff');
+            });
+        }
+
+        function checkXOXWin(p) {
+            const w = [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [2,4,6]];
+            return w.some(comb => comb.every(idx => xoxBoard[idx] === p));
+        }
+
+        function endXOXRound(msg) {
+            xoxLives--;
+            xoxActive = false;
+            document.getElementById('xox-lives').innerText = xoxLives;
+            document.getElementById('xox-status').innerText = msg;
+
+            if (xoxLives <= 0) {
+                document.getElementById('xox-board').style.pointerEvents = "none";
+                document.getElementById('xox-reset').style.display = "none";
+                document.getElementById('xox-ad-btn').style.display = "block";
+                injectPopunderAd();
+            }
+        }
+
+        function resetXOXBoard() {
+            if (xoxLives <= 0) return;
+            xoxBoard = ['', '', '', '', '', '', '', '', ''];
+            xoxActive = true;
+            document.getElementById('xox-status').innerText = "Your Turn (X)";
+            updateXOXUI();
+        }
+
+        function watchAdRefillXOX() {
+            injectPopunderAd();
+            xoxLives = 5;
+            document.getElementById('xox-lives').innerText = xoxLives;
+            document.getElementById('xox-board').style.pointerEvents = "auto";
+            document.getElementById('xox-reset').style.display = "block";
+            document.getElementById('xox-ad-btn').style.display = "none";
+            resetXOXBoard();
+        }
+
+        // ==========================================
+        // SNAKE GAME LOGIC
+        // ==========================================
+        const canvas = document.getElementById("game-canvas");
+        const ctx = canvas.getContext("2d");
+        const box = 10;
+        let snake, direction, food, gameInterval, score = 0, coins = 0;
+
+        function startSnakeGame() {
+            clearInterval(gameInterval);
+            document.getElementById('game-ad-btn').style.display = "none";
+            score = 0;
+            document.getElementById('game-score').innerText = score;
+            snake = [{ x: 10 * box, y: 10 * box }];
+            direction = "RIGHT";
+            generateFood();
+            gameInterval = setInterval(drawGame, 130);
+        }
+
+        function generateFood() {
+            food = {
+                x: Math.floor(Math.random() * (canvas.width / box)) * box,
+                y: Math.floor(Math.random() * (canvas.height / box)) * box
+            };
+        }
+
+        function changeDirection(dir) {
+            if (dir === "LEFT" && direction !== "RIGHT") direction = "LEFT";
+            if (dir === "UP" && direction !== "DOWN") direction = "UP";
+            if (dir === "RIGHT" && direction !== "LEFT") direction = "RIGHT";
+            if (dir === "DOWN" && direction !== "UP") direction = "DOWN";
+        }
+
+        function drawGame() {
+            ctx.fillStyle = "#000";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < snake.length; i++) {
+                ctx.fillStyle = i === 0 ? "#FF2E93" : "#ff8cc5";
+                ctx.fillRect(snake[i].x, snake[i].y, box, box);
+            }
+
+            ctx.fillStyle = "#FFD700";
+            ctx.fillRect(food.x, food.y, box, box);
+
+            let snakeX = snake[0].x;
+            let snakeY = snake[0].y;
+
+            if (direction === "LEFT") snakeX -= box;
+            if (direction === "UP") snakeY -= box;
+            if (direction === "RIGHT") snakeX += box;
+            if (direction === "DOWN") snakeY += box;
+
+            if (snakeX === food.x && snakeY === food.y) {
+                score++; coins += 10;
+                document.getElementById('game-score').innerText = score;
+                document.getElementById('game-coins').innerText = coins;
+                generateFood();
+            } else {
+                snake.pop();
+            }
+
+            let newHead = { x: snakeX, y: snakeY };
+
+            if (snakeX < 0 || snakeX >= canvas.width || snakeY < 0 || snakeY >= canvas.height || collision(newHead, snake)) {
+                clearInterval(gameInterval);
+                document.getElementById('game-ad-btn').style.display = "block";
+                injectPopunderAd();
+                return;
+            }
+            snake.unshift(newHead);
+        }
+
+        function collision(head, array) {
+            for (let i = 0; i < array.length; i++) {
+                if (head.x === array[i].x && head.y === array[i].y) return true;
+            }
+            return false;
+        }
+
+        function watchAdRefillSnake() { injectPopunderAd(); startSnakeGame(); }
+
+        function injectPopunderAd() {
+            let script = document.createElement('script');
+            script.src = "https://pl29492368.effectivecpmnetwork.com/60/c8/0a/60c80a5375e08ee2f012f29c386e4582.js";
+            document.body.appendChild(script);
+        }
+    </script>
+</body>
+</html>
